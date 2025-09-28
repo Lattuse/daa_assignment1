@@ -1,4 +1,4 @@
-package org.lattuse.metrics;
+package org.lattuse.algo.metrics;
 
 public class Metrics {
     public long comparisons = 0;

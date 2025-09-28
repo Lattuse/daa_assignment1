@@ -1,4 +1,4 @@
-package org.lattuse.metrics;
+package org.lattuse.algo.metrics;
 
 import java.io.BufferedWriter;
 import java.io.File;
