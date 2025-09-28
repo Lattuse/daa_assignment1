@@ -81,7 +81,6 @@ public class MergeSortTest {
         Metrics m = new Metrics();
         MergeSort.sort(a, m);
         int log2n = (int) (Math.log(n) / Math.log(2));
-        // глубина не должна быть сильно больше, чем log2(n)
         assertTrue(m.maxDepth <= log2n + 2, "Recursion depth too large");
     }
 }

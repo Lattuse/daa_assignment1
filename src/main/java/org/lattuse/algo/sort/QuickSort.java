@@ -22,13 +22,15 @@ public class QuickSort {
             m.enterRecursion();
             try {
                 int pivotIndex = lo + rnd.nextInt(hi - lo + 1);
-                swap(a, pivotIndex, hi, m);
-                int p = partition(a, lo, hi, m);
+                SortUtils.swap(a, pivotIndex, hi, m);
+
+                int p = SortUtils.partition(a, lo, hi, m);
+
                 int leftSize = p - lo;
                 int rightSize = hi - p;
                 if (leftSize < rightSize) {
                     quicksort(a, lo, p - 1, m, rnd);
-                    lo = p + 1; // tail recurse on larger part iteratively
+                    lo = p + 1;
                 } else {
                     quicksort(a, p + 1, hi, m, rnd);
                     hi = p - 1;
@@ -38,25 +40,5 @@ public class QuickSort {
             }
         }
     }
-
-    private static int partition(int[] a, int lo, int hi, Metrics m) {
-        int pivot = a[hi];
-        int i = lo;
-        for (int j = lo; j < hi; j++) {
-            m.comparisons++;
-            if (a[j] <= pivot) {
-                swap(a, i++, j, m);
-            }
-        }
-        swap(a, i, hi, m);
-        return i;
-    }
-
-    private static void swap(int[] a, int i, int j, Metrics m) {
-        if (i == j) return;
-        int t = a[i];
-        a[i] = a[j];
-        a[j] = t;
-        m.swaps++;
-    }
 }
+

@@ -2,56 +2,62 @@ package org.lattuse.algo.sort;
 
 import org.lattuse.algo.metrics.Metrics;
 
+import java.util.Arrays;
+
 public class MergeSort {
-    private static final int CUTOFF = 32;
+    private static final int CUTOFF = 16;
 
     public static void sort(int[] a, Metrics m) {
         if (a == null || a.length < 2) return;
-        int[] buf = new int[a.length];
         m.reset();
-        sort(a, buf, 0, a.length - 1, m);
+        int[] aux = new int[a.length];
+        mergesort(a, aux, 0, a.length - 1, m);
     }
 
-    private static void sort(int[] a, int[] buf, int lo, int hi, Metrics m) {
+    private static void mergesort(int[] a, int[] aux, int lo, int hi, Metrics m) {
         if (hi - lo + 1 <= CUTOFF) {
             InsertionSort.sort(a, lo, hi, m);
             return;
         }
+
         m.enterRecursion();
         try {
             int mid = lo + (hi - lo) / 2;
-            sort(a, buf, lo, mid, m);
-            sort(a, buf, mid + 1, hi, m);
-            merge(a, buf, lo, mid, hi, m);
+            mergesort(a, aux, lo, mid, m);
+            mergesort(a, aux, mid + 1, hi, m);
+
+            if (a[mid] <= a[mid + 1]) {
+                // optimization, just return if already sorted
+                if (m != null) m.comparisons++;
+                return;
+            }
+
+            merge(a, aux, lo, mid, hi, m);
         } finally {
             m.exitRecursion();
         }
     }
 
-    private static void merge(int[] a, int[] buf, int lo, int mid, int hi, Metrics m) {
-        int i = lo, j = mid + 1, k = lo;
-        while (i <= mid && j <= hi) {
-            m.comparisons++;
-            if (a[i] <= a[j]) {
-                buf[k++] = a[i++];
+    private static void merge(int[] a, int[] aux, int lo, int mid, int hi, Metrics m) {
+        // copy in buffer
+        System.arraycopy(a, lo, aux, lo, hi - lo + 1);
+
+        int i = lo, j = mid + 1;
+        for (int k = lo; k <= hi; k++) {
+            if (i > mid) {
+                a[k] = aux[j++];
+            } else if (j > hi) {
+                a[k] = aux[i++];
             } else {
-                buf[k++] = a[j++];
+                if (m != null) m.comparisons++;
+                if (aux[j] < aux[i]) {
+                    a[k] = aux[j++];
+                } else {
+                    a[k] = aux[i++];
+                }
             }
-            m.swaps++; // counting copies as "swaps/assignments"
-        }
-        while (i <= mid) {
-            buf[k++] = a[i++];
-            m.swaps++;
-        }
-        while (j <= hi) {
-            buf[k++] = a[j++];
-            m.swaps++;
-        }
-        // copy back
-        for (int t = lo; t <= hi; t++) {
-            a[t] = buf[t];
-            m.swaps++;
         }
     }
 }
+
 
